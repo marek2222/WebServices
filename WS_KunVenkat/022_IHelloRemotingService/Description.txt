@@ -1,0 +1,88 @@
+﻿http://csharp-video-tutorials.blogspot.com/2013/11/part-2-creating-remoting-service-and_17.html
+http://www.youtube.com/playlist?list=PL6n9fhu94yhVxEyaRMaMN_-qnDdNVGsL1
+
+
+o satisfy the requirement of the second client let's create a .NET remoting service.
+Creating a remoting service
+1. Create a new Class Library project and name it IHelloRemotingService.
+2. Rename Class1.cs file to IHelloRemotingService.cs. Copy and paste the following code in IHelloRemotingService.cs file.
+namespace IHelloRemotingService
+{
+    public interface IHelloRemtingService
+    {
+        string GetMessage(string name);
+    }
+}
+3. Right click on IHelloRemotingService solution in solution explorer and add new class library project, and name it HelloRemotingService.
+4. We want to use interface IHelloRemotingService in HelloRemotingService project. So add a reference to IHelloRemotingService project.
+5. Rename Class1.cs file to HelloRemotingService.cs. Copy and paste the following code in HelloRemotingService.cs file.
+using System;
+namespace HelloRemotingService
+{
+    public class HelloRemotingService : MarshalByRefObject,
+        IHelloRemotingService.IHelloRemtingService
+    {
+        public string GetMessage(string name)
+        {
+            return "Hello " + name;
+        }
+    }
+}
+6. Now we need to host the remoting service. To host it let's use a console application. A windows application or IIS can also be used to host the remoting service. Right click on IHelloRemotingService solution in solution explorer and add new Console Application  project, and name it RemotingServiceHost.
+7. Add a reference to IHelloRemotingService and HelloRemotingService projects and System.Runtime.Remoting assembly.
+8. Copy and paste the following code in Program.cs file
+using System;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
+
+namespace RemotingServiceHost
+{
+    class Program
+    {
+        static void Main()
+        {
+            HelloRemotingService.HelloRemotingService remotingService =
+                new HelloRemotingService.HelloRemotingService();
+            TcpChannel channel = new TcpChannel(8080);
+            ChannelServices.RegisterChannel(channel);
+            RemotingConfiguration.RegisterWellKnownServiceType(
+               typeof(HelloRemotingService.HelloRemotingService), "GetMessage",
+               WellKnownObjectMode.Singleton);
+            Console.WriteLine("Host started @ " + DateTime.Now.ToString());
+            Console.ReadLine();
+        }
+    }
+}
+9. Now we need to create the client for our remoting service. Let's use windows application as the client. Right click on IHelloRemotingService solution in solution explorer and add new windows application.
+10. Add a reference to IHelloRemotingService project and System.Runtime.Remoting assembly.
+11. Drag and drop a textbox, button and a label control on Form1 in the windows application.
+12. Double click the button to generate the click event handler. Copy and paste the following code in Form1.cs.
+using System;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Windows.Forms;
+
+namespace HelloRemotingServiceClient
+{
+    public partial class Form1 : Form
+    {
+        IHelloRemotingService.IHelloRemtingService client;
+        public Form1()
+        {
+            InitializeComponent();
+            TcpChannel channel = new TcpChannel();
+            ChannelServices.RegisterChannel(channel);
+            client = (IHelloRemotingService.IHelloRemtingService)Activator.GetObject(
+              typeof(IHelloRemotingService.IHelloRemtingService), 
+              "tcp://localhost:8080/GetMessage");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            label1.Text = client.GetMessage(textBox1.Text);
+        }
+    }
+}
+
+By this point you may have already realized how different web service and remoting programming models are. In Part 3, we will discuss implementing a single WCF service that can satisfy the requirements of both the clients.

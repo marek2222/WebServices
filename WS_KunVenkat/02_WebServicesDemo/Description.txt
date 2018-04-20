@@ -1,2 +1,0 @@
-﻿http://csharp-video-tutorials.blogspot.com/2013/11/part-2-creating-remoting-service-and_17.html
-http://www.youtube.com/playlist?list=PL6n9fhu94yhVxEyaRMaMN_-qnDdNVGsL1

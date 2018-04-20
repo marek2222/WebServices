@@ -59,6 +59,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Description.txt" />
     <Content Include="Service References\HelloWebService\HelloWebService.disco" />
     <Content Include="Service References\HelloWebService\configuration91.svcinfo" />
     <Content Include="Service References\HelloWebService\configuration.svcinfo" />
