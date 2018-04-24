@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebServicesDemo", "WebServicesDemo\WebServicesDemo.csproj", "{7697A76A-5D93-4D29-B698-A56FF0CFDAF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWebApplication", "HelloWebApplication\HelloWebApplication.csproj", "{61DF3614-56B5-4CAB-AFDC-DCDD39D2AB0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7697A76A-5D93-4D29-B698-A56FF0CFDAF2} = {7697A76A-5D93-4D29-B698-A56FF0CFDAF2}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7697A76A-5D93-4D29-B698-A56FF0CFDAF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7697A76A-5D93-4D29-B698-A56FF0CFDAF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7697A76A-5D93-4D29-B698-A56FF0CFDAF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7697A76A-5D93-4D29-B698-A56FF0CFDAF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61DF3614-56B5-4CAB-AFDC-DCDD39D2AB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61DF3614-56B5-4CAB-AFDC-DCDD39D2AB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61DF3614-56B5-4CAB-AFDC-DCDD39D2AB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61DF3614-56B5-4CAB-AFDC-DCDD39D2AB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
