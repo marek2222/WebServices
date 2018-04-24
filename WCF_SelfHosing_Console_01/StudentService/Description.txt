@@ -1,0 +1,135 @@
+﻿https://www.codeproject.com/Articles/784084/WCF-Self-Hosting-in-a-Console-Application-Simplifi
+
+WCF Self Hosting in a Console Application Simplified
+
+Imran Abdul Ghani, 9 Jun 2014
+ 
+	   3.97 (10 votes)
+In order to host a Windows Communication Foundation Service, we normally need a managed process, a ServiceHost instance and an endpoint configured for WCF Service.We can host a WCF Service in following different possible ways: Hosting in a Managed Application/ Self Hosting Console Application Window
+In order to host a Windows Communication Foundation Service, we normally need a managed process, a ServiceHost instance and an endpoint configured for WCF Service.We can host a WCF Service in following different possible ways:
+
+Hosting in a Managed Application/ Self Hosting
+  Console Application
+  Windows/WPF Application
+  Windows Service
+Hosting on Web Server
+  IIS 6.0 (ASP.NET Application supports only HTTP)
+  Windows Process Activation Service (WAS) i.e. IIS 7.0 supports HTTP, TCP, NamedPipes, MSMQ.
+
+In this WCF Tutorial, focus is to Self Host our WCF Service in a Console Application using step by step approach. Self Hosting a WCF Service in a console application is comparatively easy as well as flexible because we can achieve the purpose by writing few lines of code. Let’s first Create a Simple WCF Service i.e. a StudentService and then host in a Console application. StudentService having service operation GetStudentInfo that takes StudentId as parameter and returns student name.
+
+1. Create StudentService Class Library
+Open Visual Studio and Create a new Class Library Project, name it as “StudentService” and press “OK” button.
+
+
+
+Then, right click on project and Add a new “WCF Service” to this Class Library Project.
+
+
+
+It will add Service Contract (IStudentService) and it’s implementation class (StudentService) to class library project. Also, it will add a reference to System.ServiceModel.
+
+Code for IStudentService interface will be as follows:
+
+[ServiceContract] 
+public interface IStudentService 
+ {
+     [OperationContract]
+     string GetStudentInfo(int studentId);
+ }
+
+And following is the code for StudentService implementation class:
+
+public class StudentService : IStudentService
+{
+    public string GetStudentInfo(int studentId)
+    {
+        string studentName = string.Empty;
+        switch (studentId)
+        {
+            case 1:
+                {
+                    studentName = "Muhammad Ahmad";
+                    break;
+                }
+            case 2:
+                {
+                    studentName = "Muhammad Hamza";
+                    break;
+                }
+            default:
+                {
+                    studentName = "No student found";
+                    break;
+                }
+        }
+        return studentName;
+    }
+}
+2. Add a Console Application
+In order to host this service in Console application, let’s add a new console application project “StudentHost” to this solution.
+
+
+Our console application will have reference to:
+
+StudentService class library
+System.ServiceModel.
+Reference to WCF Service
+
+System.ServiceModel
+
+At the start of this WCF Tutorial, we discuss that hosting a WCF service requires a Managed Process (i.e. console application), Service Host (an instance of ServiceHost class) and one or more Service Endpoints. Detailed implementation of Student host application is as follows:
+
+class Program
+    {
+        static void Main(string[] args)
+        {
+            ServiceHost studentServiceHost = null;
+            try
+            {
+                //Base Address for StudentService
+                Uri httpBaseAddress = new Uri("http://localhost:4321/StudentService");
+                
+                //Instantiate ServiceHost
+                studentServiceHost = new ServiceHost(typeof(StudentService.StudentService),
+                    httpBaseAddress);
+ 
+                //Add Endpoint to Host
+                studentServiceHost.AddServiceEndpoint(typeof(StudentService.IStudentService), 
+                                                        new WSHttpBinding(), "");            
+ 
+                //Metadata Exchange
+                ServiceMetadataBehavior serviceBehavior = new ServiceMetadataBehavior();
+                serviceBehavior.HttpGetEnabled = true;
+                studentServiceHost.Description.Behaviors.Add(serviceBehavior);
+
+                //Open
+                studentServiceHost.Open();
+                Console.WriteLine("Service is live now at : {0}", httpBaseAddress);
+                Console.ReadKey();                
+            }
+
+            catch (Exception ex)
+            {
+                studentServiceHost = null;
+                Console.WriteLine("There is an issue with StudentService" + ex.Message);
+            }
+        }
+    }
+Now, simply build the console application and run it after setting as startup project. You will see the following screen that shows our self-hosted WCF Service is running.
+
+Self Hosted in Console Application
+
+In this WCF Service Tutorial, we have created a Windows Communication Foundation Service and hosted in a Console Application. In following post on this WCF blog, we will call this self hosted WCF service from a client application.
+
+The post WCF Self Hosting in a Console Application Simplified appeared first on WCF Tutorial.
+
+License
+This article, along with any associated source code and files, is licensed under The Code Project Open License (CPOL)
+
+About the Author
+
+Imran Abdul Ghani
+Software Developer (Senior) Emaratech
+United Arab Emirates United Arab Emirates
+Imran Abdul Ghani has more than 10 years of experience in designing/developing enterprise level applications. He is Microsoft Certified Solution Developer for .NET(MCSD.NET) since 2005. You can reach his blogging at WCF Tutorials, Web Development, SharePoint for Dummies.
