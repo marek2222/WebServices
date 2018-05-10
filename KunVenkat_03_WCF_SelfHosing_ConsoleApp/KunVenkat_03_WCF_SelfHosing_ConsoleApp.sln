@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{433B289A-5CCB-44BA-A9B6-92EA6796FD64}"
 	ProjectSection(SolutionItems) = preProject
 		Desc.txt = Desc.txt
+		Run.txt = Run.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloServiceHost", "HelloServiceHost\HelloServiceHost.csproj", "{26D93FB1-5F41-46D5-B7BB-CFCCF88702CB}"
