@@ -42,7 +42,8 @@ namespace CompanyService
 }
 
 Hosting the WCF service using a console application.
-1. Right click on CompanyService solution in Solution Explorer and add a new Console Application project with name = CompanyServiceHost
+1. Right click on CompanyService solution in Solution Explorer 
+  and add a new Console Application project with name = CompanyServiceHost
 2. Add a reference to System.ServiceModel assembly and CompanyService project
 3. Right click on CompanyServiceHost project and add Application Configuration File. 
    This should add App.config file to the project. Copy and paste the following XML. 
