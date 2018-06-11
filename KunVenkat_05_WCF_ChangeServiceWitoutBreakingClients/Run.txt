@@ -1,0 +1,6 @@
+
+
+Uwaga: Najpierw hostujemy na aplikacji konsolowej HelloServiceHost. 
+Uruchamienie przez bin\debug\HelloServiceHost aby uruchomiæ serwis na konsoli, 
+nastêpnie na przyk³ad z poziomu VS odpalamy klienta HelloWebClient 
+i wpisujemy swoje imie.

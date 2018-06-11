@@ -1,0 +1,39 @@
+Part 5 - How to make changes to wcf service without breaking clients
+http://csharp-video-tutorials.blogspot.com/2013/11/part-5-how-to-make-changes-to-wcf_21.html
+
+Suggested Videos
+Part 2 - Creating a remoting service and a web service
+Part 3 - Creating a wcf service 
+Part 4 - Single wcf service implementing multiple service contracts
+
+We are continuing from Part  3.
+
+Use Name property of ServiceContractAttribute and give it an explicit name to prevent the clients from breaking when you change the service contract interface name.
+
+
+
+We have not used Name property of the ServiceContractAttribute in the example below.
+[ServiceContract]
+public interface IHelloService
+{
+    [OperationContract]
+    string GetMessage(string name);
+}
+
+Later if we change the interface name from IHelloService to IHelloServiceChanged, this would break the existing clients consuming your wcf service. In order to prevent this from happening use Name property as shown below.
+[ServiceContract(Name = "IHelloService")]
+public interface IHelloServiceChanged
+{
+    [OperationContract]
+    string GetMessage(string name);
+}
+
+In WSDL document, we have something called portType. You can think of this portType as the interface the client uses to communicate with the wcf service. When you don't set the Name property on a service contract attribute, by default the name attribute of the portType xml element in WSDL will be the name of the service contract interface. If you set an explicit Name for the service contract using Name property then that Name will be used for the portType.
+
+In a similar fashion you can set Name property for an OperationContract as shown below.
+[ServiceContract(Name = "IHelloService")]
+public interface IHelloServiceChanged
+{
+    [OperationContract(Name = "GetMessage")]
+    string GetMessageChanged(string name);
+} 
