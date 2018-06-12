@@ -1,0 +1,348 @@
+Part 6 - WCF DataContract and DataMember
+http://csharp-video-tutorials.blogspot.com/2013/11/part-6-wcf-datacontract-and-datamember_23.html
+
+Suggested Videos
+Part 3 - Creating a wcf service
+Part 4 - Single wcf service implementing multiple service contracts 
+Part 5 - How to make changes to wcf service without breaking clients
+
+
+  
+
+To understand DataContract and DataMember attributes in WCF, first let's understand what is meant by Serialization.
+
+With respect to WCF, Serialization is the process of converting an object into an XML representation. The reverse process, that is reconstructing the same object from the XML is called as Deserialization. 
+
+
+  
+
+By default, WCF uses DataContractSerializer. 
+
+For a complex type like Customer, Employee, Student to be serialized, the complex type can either be decorated with 
+1. SerializableAttribute or
+2. DataContractAttribute
+
+With .NET 3.5 SP1 and above, we don't have to explicitly use DataContract or DataMember attributes. The Data Contract Serializer will serialize all public properties of your complex type in an alphabetical order. By default private field and properties are not serialized.
+
+If we decorate a complex type, with [Serializable] attribute the DataContractSerializer serializes all fields. With [Serializable] attribute we don't have explicit control on what fields to include and exclude in serialized data.
+
+If we decorate a complex type with [Datacontract] attribute, the DataContractSerializer serializes the fields marked with the [DataMember] attribute. The fields that are not marked with [DataMember] attribute are excluded from serialization. The [DataMember] attribute can be applied either on the private fields or public properties.
+
+In WCF, the most common way of serialization is to mark the type with the DataContract attribute and mark each member that needs to be serialized with the DataMember attribute. 
+
+If you want to have explicit control on what fields and properties get serialized then use DataContract and DataMember attributes. 
+1. Using DataContractAttribute, you can define an XML namespace for your data
+2. Using DataMemberAttribute, you can
+    a) Define Name, Order, and whether if a property or field IsRequired
+    b) Also, serialize private fields and properties
+
+Code used in the demo:
+SQL Script:
+Create Table tblEmployee
+(
+ Id int,
+ Name nvarchar(50),
+ Gender nvarchar(50),
+ DateOfBirth datetime
+)
+
+Insert into tblEmployee values (1, 'Mark', 'Male', '10/10/1980')
+Insert into tblEmployee values (2, 'Mary', 'Female', '11/10/1981')
+Insert into tblEmployee values (3, 'John', 'Male', '8/10/1979')
+
+Create procedure spGetEmployee
+@Id int
+as
+Begin
+ Select Id, Name, Gender, DateOfBirth
+ from tblEmployee 
+ where Id = @Id
+End
+
+Create procedure spSaveEmployee
+@Id int,
+@Name nvarchar(50),
+@Gender nvarchar(50),
+@DateOfBirth DateTime
+as
+Begin
+ Insert into tblEmployee
+ values (@Id, @Name, @Gender, @DateOfBirth)
+End
+
+Employee.cs file in EmployeeService project:
+using System;
+using System.Runtime.Serialization;
+
+namespace EmployeeService
+{
+    [DataContract(Namespace="http://pragimtech.com/Employee")]
+    public class Employee
+    {
+        private int _id;
+        private string _name;
+        private string _gender;
+        private DateTime _dateOfBirth;
+
+        [DataMember(Order=1)]
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
+        [DataMember(Order = 2)]
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+
+        [DataMember(Order = 3)]
+        public string Gender
+        {
+            get { return _gender; }
+            set { _gender = value; }
+        }
+
+        [DataMember(Order = 4)]
+        public DateTime DateOfBirth
+        {
+            get { return _dateOfBirth; }
+            set { _dateOfBirth = value; }
+        }
+    }
+}
+
+IEmployeeService.cs in EmployeeService project
+using System.ServiceModel;
+
+namespace EmployeeService
+{
+    [ServiceContract]
+    public interface IEmployeeService
+    {
+        [OperationContract]
+        Employee GetEmployee(int Id);
+
+        [OperationContract]
+        void SaveEmployee(Employee Employee);
+    }
+}
+
+EmployeeService.cs in EmployeeService project
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace EmployeeService
+{
+    public class EmployeeService : IEmployeeService
+    {
+        public Employee GetEmployee(int Id)
+        {
+            Employee employee = new Employee();
+            string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("spGetEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameterId = new SqlParameter();
+                parameterId.ParameterName = "@Id";
+                parameterId.Value = Id;
+                cmd.Parameters.Add(parameterId);
+                con.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    employee.Id = Convert.ToInt32(reader["Id"]);
+                    employee.Name = reader["Name"].ToString();
+                    employee.Gender = reader["Gender"].ToString();
+                    employee.DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]);
+                }
+            }
+            return employee;
+        }
+
+        public void SaveEmployee(Employee employee)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("spSaveEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameterId = new SqlParameter
+                {
+                    ParameterName = "@Id",
+                    Value = employee.Id
+                };
+                cmd.Parameters.Add(parameterId);
+
+                SqlParameter parameterName = new SqlParameter
+                {
+                    ParameterName = "@Name",
+                    Value = employee.Name
+                };
+                cmd.Parameters.Add(parameterName);
+
+                SqlParameter parameterName = new SqlParameter
+                {
+                    ParameterName = "@Gender",
+                    Value = employee.Gender
+                };
+                cmd.Parameters.Add(parameterGender);
+
+                SqlParameter parameterName = new SqlParameter
+                {
+                    ParameterName = "@DateOfBirth",
+                    Value = employee.DateOfBirth
+                };
+                cmd.Parameters.Add(parameterDateOfBirth);
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+}
+
+App.config in EmployeeServiceHost project
+<?xml version="1.0"?>
+<configuration>
+  <connectionStrings>
+    <add name="DBCS"
+         connectionString="data source=.;Integrated Security=SSPI;database=Sample"
+         providerName="System.Data.SqlClient" />
+  </connectionStrings>
+  <system.serviceModel>
+    <services>
+      <service name="EmployeeService.EmployeeService" behaviorConfiguration="mexBehaviour">
+        <endpoint address="EmployeeService" binding="basicHttpBinding" contract="EmployeeService.IEmployeeService">
+        </endpoint>
+        <host>
+          <baseAddresses>
+            <add baseAddress="http://localhost:8080/"/>
+          </baseAddresses>
+        </host>
+      </service>
+    </services>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior name="mexBehaviour">
+          <serviceMetadata httpGetEnabled="true"/>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+  </system.serviceModel>
+</configuration>
+
+Program.cs in EmployeeServiceHost project
+using System;
+using System.ServiceModel;
+
+namespace EmployeeServiceHost
+{
+    class Program
+    {
+        public static void Main()
+        {
+            using (ServiceHost host = new ServiceHost(typeof(EmployeeService.EmployeeService)))
+            {
+                host.Open();
+                Console.WriteLine("Host started @ " + DateTime.Now.ToString());
+                Console.ReadLine();
+            }
+        }
+    }
+}
+
+WebForm1.aspx in Client project
+<table style="font-family:Arial; border:1px solid black;">
+    <tr>
+        <td>
+            <b>ID</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtID" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Name</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtName" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Gender</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtGender" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Date Of Birth</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtDateOfBirth" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <asp:Button ID="btnGetEmployee" runat="server" 
+                                 Text="Get Employee" 
+                                 onclick="btnGetEmployee_Click" />                                    
+        </td>
+        <td>
+            <asp:Button ID="btnSave" runat="server" 
+                        Text="Save Employee" 
+                        onclick="btnSave_Click" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <asp:Label ID="lblMessage" runat="server" 
+                        ForeColor="Green" Font-Bold="true">
+            </asp:Label>
+        </td>
+    </tr>
+</table>
+
+WebForm1.aspx.cs in Client project
+protected void btnSave_Click(object sender, EventArgs e)
+{
+    EmployeeService.Employee employee = new EmployeeService.Employee();
+    employee.Id = Convert.ToInt32(txtID.Text);
+    employee.Name = txtName.Text;
+    employee.Gender = txtGender.Text;
+    employee.DateOfBirth = Convert.ToDateTime(txtDateOfBirth.Text);
+
+    EmployeeService.EmployeeServiceClient client = new
+        EmployeeService.EmployeeServiceClient();
+    client.SaveEmployee(employee);
+
+    lblMessage.Text = "Employee saved";
+}
+
+protected void btnGetEmployee_Click(object sender, EventArgs e)
+{
+    EmployeeService.EmployeeServiceClient client = new
+        EmployeeService.EmployeeServiceClient();
+            
+    EmployeeService.Employee employee =             
+        client.GetEmployee(Convert.ToInt32(txtID.Text));
+
+    txtName.Text = employee.Name;
+    txtGender.Text = employee.Gender;
+    txtDateOfBirth.Text = employee.DateOfBirth.ToShortDateString();
+
+    lblMessage.Text = "Employee retrieved";
+} 
