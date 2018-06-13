@@ -9,16 +9,24 @@ namespace HelloWebClient
 {
   public partial class WebForm1 : System.Web.UI.Page
   {
+    private HelloService.HelloServiceClient client = null;
+    
     protected void Page_Load(object sender, EventArgs e)
     {
-
+      if (!IsPostBack)
+      {
+        client = new HelloService.HelloServiceClient("BasicHttpBinding_IHelloService");
+      }
     }
 
     protected void Button1_Click(object sender, EventArgs e)
     {
-      HelloService.HelloServiceClient client = 
-        new HelloService.HelloServiceClient("BasicHttpBinding_IHelloService");
-      Label1.Text = client.GetMessage(TextBox1.Text);
+      Label1.Text = CallGetMessage(TextBox1.Text);
+    }
+
+    public string CallGetMessage(string message)
+    {
+      return client.GetMessage(message);
     }
   }
 }

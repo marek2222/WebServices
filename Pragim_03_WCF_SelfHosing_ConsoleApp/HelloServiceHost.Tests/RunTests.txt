@@ -1,0 +1,5 @@
+
+
+Uwaga: Najpierw hostujemy na aplikacji konsolowej HelloServiceHost.exe. 
+Uruchamienie przez bin\debug\HelloServiceHost.exe aby uruchomiæ serwis na konsoli, 
+nastêpnie odpalamy testy jednostkowe.
