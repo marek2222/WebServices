@@ -16,18 +16,28 @@ namespace CompanyClient
 
     protected void Button1_Click(object sender, EventArgs e)
     {
-      CompanyService.MyCompanyPublicServiceClient client1
-        = new CompanyService.MyCompanyPublicServiceClient(
-          "BasicHttpBinding_IMyCompanyPublicService");
-      Label1.Text = client1.GetPublicInformation();
+      Label1.Text = GetPublicServiceClient();
     }
 
     protected void Button2_Click(object sender, EventArgs e)
     {
+      Label2.Text = GetConfidentialServiceClient();
+    }
+
+    public string GetPublicServiceClient()
+    {
+      CompanyService.MyCompanyPublicServiceClient client1
+        = new CompanyService.MyCompanyPublicServiceClient(
+          "BasicHttpBinding_IMyCompanyPublicService");
+      return client1.GetPublicInformation();
+    }
+
+    public string GetConfidentialServiceClient()
+    {
       CompanyService.MyCompanyConfidentialServiceClient client2
         = new CompanyService.MyCompanyConfidentialServiceClient(
           "NetTcpBinding_IMyCompanyConfidentialService");
-      Label2.Text = client2.GetCofidentialInformation();
+      return client2.GetCofidentialInformation();
     }
 
   }
