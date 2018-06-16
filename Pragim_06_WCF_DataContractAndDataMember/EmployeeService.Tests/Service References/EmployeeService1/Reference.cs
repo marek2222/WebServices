@@ -8,14 +8,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Client.EmployeeService {
+namespace EmployeeService.Tests.EmployeeService1 {
     using System.Runtime.Serialization;
     using System;
     
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Employee", Namespace="http://pragimtech.com/Employee")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Employee", Namespace="http://schemas.datacontract.org/2004/07/EmployeeService")]
     [System.SerializableAttribute()]
     public partial class Employee : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
@@ -107,29 +107,29 @@ namespace Client.EmployeeService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="EmployeeService.IEmployeeService")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="EmployeeService1.IEmployeeService")]
     public interface IEmployeeService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IEmployeeService/GetEmployee", ReplyAction="http://tempuri.org/IEmployeeService/GetEmployeeResponse")]
-        Client.EmployeeService.Employee GetEmployee(int Id);
+        EmployeeService.Tests.EmployeeService1.Employee GetEmployee(int Id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IEmployeeService/GetEmployee", ReplyAction="http://tempuri.org/IEmployeeService/GetEmployeeResponse")]
-        System.Threading.Tasks.Task<Client.EmployeeService.Employee> GetEmployeeAsync(int Id);
+        System.Threading.Tasks.Task<EmployeeService.Tests.EmployeeService1.Employee> GetEmployeeAsync(int Id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IEmployeeService/SaveEmployee", ReplyAction="http://tempuri.org/IEmployeeService/SaveEmployeeResponse")]
-        void SaveEmployee(Client.EmployeeService.Employee employee);
+        void SaveEmployee(EmployeeService.Tests.EmployeeService1.Employee employee);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IEmployeeService/SaveEmployee", ReplyAction="http://tempuri.org/IEmployeeService/SaveEmployeeResponse")]
-        System.Threading.Tasks.Task SaveEmployeeAsync(Client.EmployeeService.Employee employee);
+        System.Threading.Tasks.Task SaveEmployeeAsync(EmployeeService.Tests.EmployeeService1.Employee employee);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IEmployeeServiceChannel : Client.EmployeeService.IEmployeeService, System.ServiceModel.IClientChannel {
+    public interface IEmployeeServiceChannel : EmployeeService.Tests.EmployeeService1.IEmployeeService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class EmployeeServiceClient : System.ServiceModel.ClientBase<Client.EmployeeService.IEmployeeService>, Client.EmployeeService.IEmployeeService {
+    public partial class EmployeeServiceClient : System.ServiceModel.ClientBase<EmployeeService.Tests.EmployeeService1.IEmployeeService>, EmployeeService.Tests.EmployeeService1.IEmployeeService {
         
         public EmployeeServiceClient() {
         }
@@ -150,19 +150,19 @@ namespace Client.EmployeeService {
                 base(binding, remoteAddress) {
         }
         
-        public Client.EmployeeService.Employee GetEmployee(int Id) {
+        public EmployeeService.Tests.EmployeeService1.Employee GetEmployee(int Id) {
             return base.Channel.GetEmployee(Id);
         }
         
-        public System.Threading.Tasks.Task<Client.EmployeeService.Employee> GetEmployeeAsync(int Id) {
+        public System.Threading.Tasks.Task<EmployeeService.Tests.EmployeeService1.Employee> GetEmployeeAsync(int Id) {
             return base.Channel.GetEmployeeAsync(Id);
         }
         
-        public void SaveEmployee(Client.EmployeeService.Employee employee) {
+        public void SaveEmployee(EmployeeService.Tests.EmployeeService1.Employee employee) {
             base.Channel.SaveEmployee(employee);
         }
         
-        public System.Threading.Tasks.Task SaveEmployeeAsync(Client.EmployeeService.Employee employee) {
+        public System.Threading.Tasks.Task SaveEmployeeAsync(EmployeeService.Tests.EmployeeService1.Employee employee) {
             return base.Channel.SaveEmployeeAsync(employee);
         }
     }

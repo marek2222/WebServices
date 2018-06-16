@@ -1,1 +1,4 @@
-Uwaga: WebService w trybie administratora hostujemy na aplikacji konsolowej EmployeeServiceHost. Uruchamienie z poziomy Visual Studio. W odzielnej instancji VS (administrator) uruchamiamy aplikacjê webow¹ Client. Aplikacja Client jest oddzielnym projektem w katalogu projektu. 
+Najpierw odpalamy skrypt Sql'owy. 
+Uwaga: WebService w trybie administratora hostujemy na aplikacji konsolowej EmployeeServiceHost. 
+Uruchamienie z poziomy Visual Studio. W odzielnej instancji VS (administrator) uruchamiamy 
+aplikacjê webow¹ Client. Aplikacja Client jest oddzielnym projektem w katalogu projektu. 

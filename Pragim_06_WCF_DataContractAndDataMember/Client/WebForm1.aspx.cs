@@ -16,8 +16,8 @@ namespace Client
 
     protected void btnGetEmployee_Click(object sender, EventArgs e)
     {
-      EmployeeService.EmployeeServiceClient client = new EmployeeService.EmployeeServiceClient();
-      EmployeeService.Employee employee = client.GetEmployee(Convert.ToInt32(txtID.Text));
+      EmployeeService1.EmployeeServiceClient client = new EmployeeService1.EmployeeServiceClient();
+      EmployeeService1.Employee employee = client.GetEmployee(Convert.ToInt32(txtID.Text));
 
       txtName.Text = employee.Name;
       txtGender.Text = employee.Gender;
@@ -27,8 +27,8 @@ namespace Client
 
     protected void btnSave_Click(object sender, EventArgs e)
     {
-      EmployeeService.EmployeeServiceClient client = new EmployeeService.EmployeeServiceClient();
-      EmployeeService.Employee employee = new EmployeeService.Employee();
+      EmployeeService1.EmployeeServiceClient client = new EmployeeService1.EmployeeServiceClient();
+      EmployeeService1.Employee employee = new EmployeeService1.Employee();
 
       employee.Id = Convert.ToInt32(txtID.Text);
       employee.Name = txtName.Text;
@@ -38,5 +38,6 @@ namespace Client
       client.SaveEmployee(employee);
       lblMessage.Text = "Employee saved";
     }
-  }
+
+    }
 }

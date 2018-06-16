@@ -16,10 +16,7 @@ namespace EmployeeService
       {
         SqlCommand cmd = new SqlCommand("spGetEmployee", con);
         cmd.CommandType = CommandType.StoredProcedure;
-        SqlParameter parameterId = new SqlParameter();
-        parameterId.ParameterName = "@Id";
-        parameterId.Value = Id;
-        cmd.Parameters.Add(parameterId);
+        AddParameter(cmd, "@Id", (object)Id);
         con.Open();
         SqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
@@ -33,6 +30,14 @@ namespace EmployeeService
       return employee;
     }
 
+    public void AddParameter(SqlCommand cmd, string name, object value)
+    {
+      SqlParameter parameter = new SqlParameter();
+      parameter.ParameterName = name;
+      parameter.Value = value;
+      cmd.Parameters.Add(parameter);
+    }
+
     public void SaveEmployee(Employee employee)
     {
       string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
@@ -40,33 +45,11 @@ namespace EmployeeService
       {
         SqlCommand cmd = new SqlCommand("spSaveEmployee", con);
         cmd.CommandType = CommandType.StoredProcedure;
-        SqlParameter parameterId = new SqlParameter
-        {
-          ParameterName = "@Id",
-          Value = employee.Id
-        };
-        cmd.Parameters.Add(parameterId);
 
-        SqlParameter parameterName = new SqlParameter
-        {
-          ParameterName = "@Name",
-          Value = employee.Name
-        };
-        cmd.Parameters.Add(parameterName);
-
-        SqlParameter parameterGender = new SqlParameter
-        {
-          ParameterName = "@Gender",
-          Value = employee.Gender
-        };
-        cmd.Parameters.Add(parameterGender);
-
-        SqlParameter parameterDateOfBirth = new SqlParameter
-        {
-          ParameterName = "@DateOfBirth",
-          Value = employee.DateOfBirth
-        };
-        cmd.Parameters.Add(parameterDateOfBirth);
+        AddParameter(cmd, "@Id",          (object)employee.Id);
+        AddParameter(cmd, "@Name",        (object)employee.Name);
+        AddParameter(cmd, "@Gender",      (object)employee.Gender);
+        AddParameter(cmd, "@DateOfBirth", (object)employee.DateOfBirth);
 
         con.Open();
         cmd.ExecuteNonQuery();

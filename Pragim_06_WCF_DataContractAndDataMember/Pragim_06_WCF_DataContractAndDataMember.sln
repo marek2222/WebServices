@@ -1,15 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 14 for Web
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeService", "EmployeeService\EmployeeService.csproj", "{DEB2245F-B1AB-44F5-BE29-86525BB68479}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{527FDEB4-05D3-463E-A973-CFFD6DCE5496}"
 	ProjectSection(SolutionItems) = preProject
 		Desc.txt = Desc.txt
 		Run.txt = Run.txt
+		RunSqlScript.sql = RunSqlScript.sql
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeServiceHost", "EmployeeServiceHost\EmployeeServiceHost.csproj", "{8F345B91-740A-4AEB-AAAD-EB37F32B0197}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeService.Tests", "EmployeeService.Tests\EmployeeService.Tests.csproj", "{A43C07C8-8518-459F-B793-E83063E975BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +30,10 @@ Global
 		{8F345B91-740A-4AEB-AAAD-EB37F32B0197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F345B91-740A-4AEB-AAAD-EB37F32B0197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F345B91-740A-4AEB-AAAD-EB37F32B0197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A43C07C8-8518-459F-B793-E83063E975BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43C07C8-8518-459F-B793-E83063E975BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43C07C8-8518-459F-B793-E83063E975BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43C07C8-8518-459F-B793-E83063E975BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
