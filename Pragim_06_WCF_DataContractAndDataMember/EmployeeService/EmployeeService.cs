@@ -8,9 +8,10 @@ namespace EmployeeService
   // NOTE: You can use the "Rename" command on the "Refactor" menu to change the class name "EmployeeService" in both code and config file together.
   public class EmployeeService : IEmployeeService
   {
+
     public Employee GetEmployee(int Id)
     {
-      Employee employee = new Employee();
+      Employee employee = null;
       string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
       using (SqlConnection con = new SqlConnection(cs))
       {
@@ -21,14 +22,67 @@ namespace EmployeeService
         SqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-          employee.Id = Convert.ToInt32(reader["Id"]);
-          employee.Name = reader["Name"].ToString();
-          employee.Gender = reader["Gender"].ToString();
-          employee.DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]);
+          if ((EmployeeType)reader["EmployeeType"] == EmployeeType.FullTimeEmployee)
+          {
+            employee = new FullTimeEmployee
+            {
+              Id = Convert.ToInt32(reader["Id"]),
+              Name = reader["Name"].ToString(),
+              Gender = reader["Gender"].ToString(),
+              DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]),
+              Type = EmployeeType.FullTimeEmployee,
+              AnnualSalary = Convert.ToInt32(reader["AnnualSalary"])
+              //@HourlyPay int = null,
+              //@HoursWorked int = null
+            };
+          }
+          else
+          {
+            employee = new PartTimeEmployee
+            {
+              Id = Convert.ToInt32(reader["Id"]),
+              Name = reader["Name"].ToString(),
+              Gender = reader["Gender"].ToString(),
+              DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]),
+              Type = EmployeeType.PartTimeEmployee,
+              //AnnualSalary = Convert.ToInt32(reader["AnnualSalary"])
+              HourlyPay = Convert.ToInt32(reader["HourlyPay"]),
+              HoursWorked = Convert.ToInt32(reader["HoursWorked"])
+            };
+          }
         }
       }
       return employee;
     }
+
+
+    public void SaveEmployee(Employee employee)
+    {
+      string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+      using (SqlConnection con = new SqlConnection(cs))
+      { 
+        SqlCommand cmd = new SqlCommand("spSaveEmployee", con);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        AddParameter(cmd, "@Id",          (object)employee.Id);
+        AddParameter(cmd, "@Name",        (object)employee.Name);
+        AddParameter(cmd, "@Gender",      (object)employee.Gender);
+        AddParameter(cmd, "@DateOfBirth", (object)employee.DateOfBirth);
+        AddParameter(cmd, "@EmployeeType",(object)employee.Type);
+        
+        if (employee.GetType() == typeof(FullTimeEmployee)) {
+          AddParameter(cmd, "@AnnualSalary",((FullTimeEmployee)employee).AnnualSalary);
+        }
+        else {
+          AddParameter(cmd, "@HourlyPay",   ((PartTimeEmployee)employee).HourlyPay);
+          AddParameter(cmd, "@HoursWorked", ((PartTimeEmployee)employee).HoursWorked);
+        }
+
+        con.Open();
+        cmd.ExecuteNonQuery();
+      }
+    }
+
 
     public void AddParameter(SqlCommand cmd, string name, object value)
     {
@@ -38,22 +92,5 @@ namespace EmployeeService
       cmd.Parameters.Add(parameter);
     }
 
-    public void SaveEmployee(Employee employee)
-    {
-      string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
-      using (SqlConnection con = new SqlConnection(cs))
-      {
-        SqlCommand cmd = new SqlCommand("spSaveEmployee", con);
-        cmd.CommandType = CommandType.StoredProcedure;
-
-        AddParameter(cmd, "@Id",          (object)employee.Id);
-        AddParameter(cmd, "@Name",        (object)employee.Name);
-        AddParameter(cmd, "@Gender",      (object)employee.Gender);
-        AddParameter(cmd, "@DateOfBirth", (object)employee.DateOfBirth);
-
-        con.Open();
-        cmd.ExecuteNonQuery();
-      }
-    }
   }
 }

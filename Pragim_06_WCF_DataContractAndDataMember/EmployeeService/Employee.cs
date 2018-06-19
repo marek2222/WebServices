@@ -7,24 +7,38 @@ using System.Runtime.Serialization;
 
 namespace EmployeeService
 {
-  //[DataContract(Namespace = "http://pragimtech.com/Employee")]
-  [DataContract]
   //[Serializable]
+  //[DataContract]
+  
+  [KnownType(typeof(FullTimeEmployee))]
+  [KnownType(typeof(PartTimeEmployee))]
+  [DataContract(Namespace = "http://pragimtech.com/Employee")]
   public class Employee
   {
-    //[DataMember]
-    //[DataMember(Name="ID", Order = 1)]
+
     [DataMember(Order = 1)]
-    public int Id { get; set; }
+    public int Id               { get; set; }
 
     [DataMember(Order = 2)]
-    public string Name { get; set; }
+    public string Name          { get; set; }
 
     [DataMember(Order = 3)]
-    public string Gender { get; set; }
+    public string Gender        { get; set; }
 
     [DataMember(Order = 4)]
     public DateTime DateOfBirth { get; set; }
-    
+
+    [DataMember(Order = 5)]
+    public EmployeeType Type    { get; set; }
+
+    //public int AnnualSalary     { get; set; }
+    //public int HourlyPay        { get; set; }
+    //public int HoursWorked      { get; set; }
+  }
+
+  public enum EmployeeType
+  {
+    FullTimeEmployee = 1,
+    PartTimeEmployee = 2
   }
 }

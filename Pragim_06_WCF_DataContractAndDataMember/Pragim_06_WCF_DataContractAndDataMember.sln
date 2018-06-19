@@ -7,7 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeService", "Employee
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{527FDEB4-05D3-463E-A973-CFFD6DCE5496}"
 	ProjectSection(SolutionItems) = preProject
-		Desc.txt = Desc.txt
+		Desc6.txt = Desc6.txt
+		Desc7.txt = Desc7.txt
 		Run.txt = Run.txt
 		RunSqlScript.sql = RunSqlScript.sql
 	EndProjectSection

@@ -1,0 +1,447 @@
+Part 7 - KnownType attribute in WCF
+Suggested Videos
+Part 4 - Single wcf service implementing multiple service contracts
+Part 5 - How to make changes to wcf service without breaking clients 
+Part 6 - WCF DataContract and DataMember
+
+If we have classes related by inheritance, the wcf service generally accepts and returns the base type. If you expect the service to accept and return inherited types, then use KnownType attribute.
+There are other ways of associating known types, which we will discuss in next video session.
+
+Code used in the demo:
+SQL:
+Alter table tblEmployee Add EmployeeType int, AnnualSalary int, HourlyPay int, HoursWorked int
+
+Alter procedure spGetEmployee  
+@Id int  
+as  
+Begin  
+ Select Id, Name, Gender, DateOfBirth, 
+  EmployeeType, AnnualSalary, HourlyPay, 
+  HoursWorked  
+ from tblEmployee where Id = @Id  
+End
+
+Alter procedure spSaveEmployee  
+@Id int,  
+@Name nvarchar(50),  
+@Gender nvarchar(50),  
+@DateOfBirth DateTime,
+@EmployeeType int,
+@AnnualSalary int = null,
+@HourlyPay int = null,
+@HoursWorked int = null
+as  
+Begin  
+ Insert into tblEmployee  
+ values (@Id, @Name, @Gender, @DateOfBirth, 
+   @EmployeeType, @AnnualSalary, @HourlyPay, 
+   @HoursWorked)  
+End
+
+FullTimeEmployee.cs
+namespace EmployeeService
+{
+    public class FullTimeEmployee : Employee
+    {
+        public int AnnualSalary { get; set; }
+    }
+}
+
+PartTimeEmployee.cs
+namespace EmployeeService
+{
+    public class PartTimeEmployee : Employee
+    {
+        public int HourlyPay { get; set; }
+        public int HoursWorked { get; set; }
+    }
+}
+
+Employee.cs
+using System;
+using System.Runtime.Serialization;
+
+namespace EmployeeService
+{
+    [KnownType(typeof(FullTimeEmployee))]
+    [KnownType(typeof(PartTimeEmployee))]
+    [DataContract(Namespace = "http://pragimtech.com/Employee")]
+    public class Employee
+    {
+        private int _id;
+        private string _name;
+        private string _gender;
+        private DateTime _dateOfBirth;
+
+        [DataMember(Order = 1)]
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
+        [DataMember(Order = 2)]
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+
+        [DataMember(Order = 3)]
+        public string Gender
+        {
+            get { return _gender; }
+            set { _gender = value; }
+        }
+
+        [DataMember(Order = 4)]
+        public DateTime DateOfBirth
+        {
+            get { return _dateOfBirth; }
+            set { _dateOfBirth = value; }
+        }
+
+        [DataMember(Order = 5)]
+        public EmployeeType Type { get; set; }
+    }
+
+    public enum EmployeeType
+    {
+        FullTimeEmployee = 1,
+        PartTimeEmployee = 2
+    }
+}
+
+EmployeeService.cs
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+
+namespace EmployeeService
+{
+    public class EmployeeService : IEmployeeService
+    {
+        public Employee GetEmployee(int Id)
+        {
+            Employee employee = null;
+            string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("spGetEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameterId = new SqlParameter();
+                parameterId.ParameterName = "@Id";
+                parameterId.Value = Id;
+                cmd.Parameters.Add(parameterId);
+                con.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    if ((EmployeeType)reader["EmployeeType"] == EmployeeType.FullTimeEmployee)
+                    {
+                        employee = new FullTimeEmployee
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            Name = reader["Name"].ToString(),
+                            Gender = reader["Gender"].ToString(),
+                            DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]),
+                            Type = EmployeeType.FullTimeEmployee,
+                            AnnualSalary = Convert.ToInt32(reader["AnnualSalary"])
+                        };
+                    }
+                    else
+                    {
+                        employee = new PartTimeEmployee
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            Name = reader["Name"].ToString(),
+                            Gender = reader["Gender"].ToString(),
+                            DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]),
+                            Type = EmployeeType.PartTimeEmployee,
+                            HourlyPay = Convert.ToInt32(reader["HourlyPay"]),
+                            HoursWorked = Convert.ToInt32(reader["HoursWorked"]),
+                        };
+                    }
+                }
+            }
+            return employee;
+        }
+
+        public void SaveEmployee(Employee employee)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["DBCS"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("spSaveEmployee", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter parameterId = new SqlParameter
+                {
+                    ParameterName = "@Id",
+                    Value = employee.Id
+                };
+                cmd.Parameters.Add(parameterId);
+
+                SqlParameter parameterName = new SqlParameter
+                {
+                    ParameterName = "@Name",
+                    Value = employee.Name
+                };
+                cmd.Parameters.Add(parameterName);
+
+                SqlParameter parameterGender = new SqlParameter
+                {
+                    ParameterName = "@Gender",
+                    Value = employee.Gender
+                };
+                cmd.Parameters.Add(parameterGender);
+
+                SqlParameter parameterDateOfBirth = new SqlParameter
+                {
+                    ParameterName = "@DateOfBirth",
+                    Value = employee.DateOfBirth
+                };
+                cmd.Parameters.Add(parameterDateOfBirth);
+
+                SqlParameter parameterEmployeeType = new SqlParameter
+                {
+                    ParameterName = "@EmployeeType",
+                    Value = employee.Type
+                };
+                cmd.Parameters.Add(parameterEmployeeType);
+
+                if (employee.GetType() == typeof(FullTimeEmployee))
+                {
+                    SqlParameter parameterAnnualSalary = new SqlParameter
+                    {
+                        ParameterName = "@AnnualSalary",
+                        Value = ((FullTimeEmployee)employee).AnnualSalary
+                    };
+                    cmd.Parameters.Add(parameterAnnualSalary);
+                }
+                else
+                {
+                    SqlParameter parameterHourlyPay = new SqlParameter
+                    {
+                        ParameterName = "@HourlyPay",
+                        Value = ((PartTimeEmployee)employee).HourlyPay,
+                    };
+                    cmd.Parameters.Add(parameterHourlyPay);
+
+                    SqlParameter parameterHoursWorked = new SqlParameter
+                    {
+                        ParameterName = "@HoursWorked",
+                        Value = ((PartTimeEmployee)employee).HoursWorked
+                    };
+                    cmd.Parameters.Add(parameterHoursWorked);
+                }
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+}
+
+WebForm1.aspx
+<table style="font-family: Arial; border: 1px solid black;">
+    <tr>
+        <td>
+            <b>ID</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtID" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Name</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtName" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Gender</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtGender" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Date Of Birth</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtDateOfBirth" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Employee Type</b>
+        </td>
+        <td>
+            <asp:DropDownList ID="ddlEmployeeType" runat="server" 
+                OnSelectedIndexChanged="ddlEmployeeType_SelectedIndexChanged"
+                AutoPostBack="True">
+                <asp:ListItem Text="Select Employee Type" Value="-1">
+                </asp:ListItem>
+                <asp:ListItem Text="Full Time Employee" Value="1">
+                </asp:ListItem>
+                <asp:ListItem Text="Part Time Employee" Value="2">
+                </asp:ListItem>
+            </asp:DropDownList>
+        </td>
+    </tr>
+    <tr id="trAnnualSalary" runat="server" visible="false">
+        <td>
+            <b>Annual Salary</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtAnnualSalary" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr id="trHourlPay" runat="server" visible="false">
+        <td>
+            <b>Hourly Pay</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtHourlyPay" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr id="trHoursWorked" runat="server" visible="false">
+        <td>
+            <b>Hours worked</b>
+        </td>
+        <td>
+            <asp:TextBox ID="txtHoursWorked" runat="server">
+            </asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <asp:Button ID="btnGetEmployee" runat="server" 
+            Text="Get Employee" OnClick="btnGetEmployee_Click" />
+        </td>
+        <td>
+            <asp:Button ID="btnSave" runat="server" 
+            Text="Save Employee" OnClick="btnSave_Click" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <asp:Label ID="lblMessage" runat="server" 
+                ForeColor="Green" Font-Bold="true">
+            </asp:Label>
+        </td>
+    </tr>
+</table>
+
+WebForm1.aspx.cs
+protected void btnGetEmployee_Click(object sender, EventArgs e)
+{
+    EmployeeService.EmployeeServiceClient client = 
+        new EmployeeService.EmployeeServiceClient();
+    EmployeeService.Employee employee = 
+        client.GetEmployee(Convert.ToInt32(txtID.Text));
+
+    if (employee.Type == EmployeeService.EmployeeType.FullTimeEmployee)
+    {
+        txtAnnualSalary.Text = 
+            ((EmployeeService.FullTimeEmployee)employee).AnnualSalary.ToString();
+        trAnnualSalary.Visible = true;
+        trHourlPay.Visible = false;
+        trHoursWorked.Visible = false;
+    }
+    else
+    {
+        txtHourlyPay.Text = 
+            ((EmployeeService.PartTimeEmployee)employee).HourlyPay.ToString();
+        txtHoursWorked.Text = 
+            ((EmployeeService.PartTimeEmployee)employee).HoursWorked.ToString();
+        trAnnualSalary.Visible = false;
+        trHourlPay.Visible = true;
+        trHoursWorked.Visible = true;
+    }
+    ddlEmployeeType.SelectedValue = ((int)employee.Type).ToString();
+
+            
+            
+    txtName.Text = employee.Name;
+    txtGender.Text = employee.Gender;
+    txtDateOfBirth.Text = employee.DateOfBirth.ToShortDateString();
+    lblMessage.Text = "Employee retrieved";
+}
+
+protected void btnSave_Click(object sender, EventArgs e)
+{
+    EmployeeService.EmployeeServiceClient client = new 
+        EmployeeService.EmployeeServiceClient();
+    EmployeeService.Employee employee = null;
+
+    if (((EmployeeService.EmployeeType)Convert.ToInt32(ddlEmployeeType.SelectedValue)) 
+        == EmployeeService.EmployeeType.FullTimeEmployee)
+    {
+        employee = new EmployeeService.FullTimeEmployee
+        {
+            Id = Convert.ToInt32(txtID.Text),
+            Name = txtName.Text,
+            Gender = txtGender.Text,
+            DateOfBirth = Convert.ToDateTime(txtDateOfBirth.Text),
+            Type = EmployeeService.EmployeeType.FullTimeEmployee,
+            AnnualSalary = Convert.ToInt32(txtAnnualSalary.Text),
+        };
+        client.SaveEmployee(employee);
+        lblMessage.Text = "Employee saved";
+    }
+    else if (((EmployeeService.EmployeeType)Convert.ToInt32(ddlEmployeeType.SelectedValue)) 
+        == EmployeeService.EmployeeType.PartTimeEmployee)
+    {
+        employee = new EmployeeService.PartTimeEmployee
+        {
+            Id = Convert.ToInt32(txtID.Text),
+            Name = txtName.Text,
+            Gender = txtGender.Text,
+            DateOfBirth = Convert.ToDateTime(txtDateOfBirth.Text),
+            Type = EmployeeService.EmployeeType.PartTimeEmployee,
+            HourlyPay = Convert.ToInt32(txtHourlyPay.Text),
+            HoursWorked = Convert.ToInt32(txtHoursWorked.Text),
+        };
+        client.SaveEmployee(employee);
+        lblMessage.Text = "Employee saved";
+    }
+    else
+    {
+        lblMessage.Text = "Please select Employee Type";
+    }
+}
+
+protected void ddlEmployeeType_SelectedIndexChanged
+    (object sender, EventArgs e)
+{
+    if (ddlEmployeeType.SelectedValue == "-1")
+    {
+        trAnnualSalary.Visible = false;
+        trHourlPay.Visible = false;
+        trHoursWorked.Visible = false;
+    }
+    else if (ddlEmployeeType.SelectedValue == "1")
+    {
+        trAnnualSalary.Visible = true;
+        trHourlPay.Visible = false;
+        trHoursWorked.Visible = false;
+    }
+    else
+    {
+        trAnnualSalary.Visible = false;
+        trHourlPay.Visible = true;
+        trHoursWorked.Visible = true;
+    }
+} 
