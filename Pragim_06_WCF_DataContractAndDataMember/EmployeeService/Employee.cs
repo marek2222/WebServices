@@ -9,11 +9,11 @@ namespace EmployeeService
 {
   //[Serializable]
   //[DataContract]
-  
+
   [KnownType(typeof(FullTimeEmployee))]
   [KnownType(typeof(PartTimeEmployee))]
   [DataContract(Namespace = "http://pragimtech.com/Employee")]
-  public class Employee
+  public class Employee : IEmployee
   {
 
     [DataMember(Order = 1)]

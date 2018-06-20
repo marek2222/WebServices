@@ -1,0 +1,76 @@
+http://csharp-video-tutorials.blogspot.com/2013/11/part-8-different-ways-of-associating_25.html
+
+Part 8 - Different ways of associating known types in wcf
+
+Suggested Videos
+Part 5 - How to make changes to wcf service without breaking clients
+Part 6 - WCF DataContract and DataMember 
+Part 7 - KnownType attribute in WCF
+
+In this video, we will discuss different options that are available for associating known types in WCF.
+
+There are 4 different ways to associate KnownTypes
+1. Use KnownType attribute on the base type. This option is global, that is all service contracts and all operation contracts will respect the known types.
+[KnownType(typeof(FullTimeEmployee))]
+[KnownType(typeof(PartTimeEmployee))]
+[DataContract]
+public class Employee
+{
+}
+
+[DataContract]
+public class FullTimeEmployee : Employee
+{
+    public int AnnualSalary { get; set; }
+}
+
+[DataContract]
+public class PartTimeEmployee : Employee
+{
+    public int HourlyPay { get; set; }
+    public int HoursWorked { get; set; }
+}
+
+
+  
+
+2. Apply ServiceKnownType attribute on the service contract. With this option the known types are respected by all operation contracts with in this service contract only.
+[ServiceKnownType(typeof(PartTimeEmployee))]
+[ServiceKnownType(typeof(FullTimeEmployee))]
+[ServiceContract]
+public interface IEmployeeService
+{
+    [OperationContract]
+    Employee GetEmployee(int Id);
+
+    [OperationContract]
+    void SaveEmployee(Employee Employee);
+}
+
+3. If you want even more granular control, then apply ServiceKnownType attribute on specific operation contracts. With this option, only the operation contracts that are decorated with ServiceKnownType attribute respect known types.
+[ServiceContract]
+public interface IEmployeeService
+{
+    [ServiceKnownType(typeof(PartTimeEmployee))]
+    [ServiceKnownType(typeof(FullTimeEmployee))]
+    [OperationContract]
+    Employee GetEmployee(int Id);
+
+    [OperationContract]
+    void SaveEmployee(Employee Employee);
+}
+
+4. You can also specify known types in the configuration file. This is equivalent to applying KnownType attribute on the base type, in the sense that it is applicable globally. All service contracts and operation contracts respect the known types.
+<system.runtime.serialization>
+  <dataContractSerializer>
+    <declaredTypes>
+      <add type="EmployeeService.Employee, EmployeeService, Version=1.0.0.0, 
+            Culture=Neutral, PublicKeyToken=null">
+        <knownType type="EmployeeService.FullTimeEmployee, EmployeeService, 
+                    Version=1.0.0.0, Culture=Neutral, PublicKeyToken=null"/>
+        <knownType type="EmployeeService.PartTimeEmployee, EmployeeService, 
+                    Version=1.0.0.0, Culture=Neutral, PublicKeyToken=null"/>
+      </add>
+    </declaredTypes>
+  </dataContractSerializer>
+</system.runtime.serialization> 

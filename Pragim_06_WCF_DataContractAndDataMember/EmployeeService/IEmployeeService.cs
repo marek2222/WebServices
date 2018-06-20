@@ -6,6 +6,8 @@ namespace EmployeeService
   [ServiceContract]
   public interface IEmployeeService
   {
+    //[ServiceKnownType(typeof(FullTimeEmployee))]
+    //[ServiceKnownType(typeof(PartTimeEmployee))]
     [OperationContract]
     Employee GetEmployee(int Id);
 

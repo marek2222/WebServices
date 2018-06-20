@@ -46,6 +46,7 @@
     <Compile Include="Employee.cs" />
     <Compile Include="EmployeeService.cs" />
     <Compile Include="FullTimeEmployee.cs" />
+    <Compile Include="IEmployee.cs" />
     <Compile Include="IEmployeeService.cs" />
     <Compile Include="PartTimeEmployee.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

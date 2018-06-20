@@ -46,7 +46,7 @@ GO
 Alter table tblEmployee Add EmployeeType int, AnnualSalary int, HourlyPay int, HoursWorked int
 go
 
-Select * From tblEmployee
+Delete From tblEmployee
 go
 
 Alter procedure spGetEmployee  
@@ -73,3 +73,8 @@ Begin
 	values (@Id, @Name, @Gender, @DateOfBirth, @EmployeeType, @AnnualSalary, @HourlyPay, @HoursWorked)  
 End
 go
+
+Insert into tblEmployee values (1, 'Mark', 'Male', '10/10/1982', 1, 6000, null,null)
+Insert into tblEmployee values (2, 'Mary', 'Female', '11/10/1981', 2, null,250,40)
+Go
+

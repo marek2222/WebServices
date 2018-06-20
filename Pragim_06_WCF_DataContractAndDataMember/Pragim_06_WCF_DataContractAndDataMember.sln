@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		Desc6.txt = Desc6.txt
 		Desc7.txt = Desc7.txt
+		Desc8.txt = Desc8.txt
 		Run.txt = Run.txt
 		RunSqlScript.sql = RunSqlScript.sql
 	EndProjectSection
