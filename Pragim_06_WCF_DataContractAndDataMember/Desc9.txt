@@ -1,0 +1,35 @@
+http://csharp-video-tutorials.blogspot.com/2013/11/part-9-how-to-enable-tracing-and_26.html
+
+Part 9 - How to enable tracing and message logging in wcf
+Suggested Videos
+Part 6 - WCF DataContract and DataMember
+Part 7 - KnownType attribute in WCF 
+Part 8 - Different ways of associating known types in wcf
+
+Use Microsoft Service Configuration Editor to enable tracing and message logging in WCF. This can be done either on the client or the wcf service. 
+
+Enable Tracing and Message Logging in WCF 
+
+1. Right click on the config file and select "Edit WCF Configuration" option from the context menu. If you don't see this option, click on Tools menu item and then selecct WCF Configuration Editor and then point to the config file. 
+2. Select Diagnostics folder
+3. Click on Enable Log Auto Flush link.
+4. Then click on Enable Message Logging link. This should automatically add file, to which messages will be logged. To enable tracing click on Enable Tracing link.
+5. Expand Diagnostics folder on the left hand side
+6. Select Message Logging item that is present under Diagnostics folder. On the right hand side set LogEntireMessage option to true.
+7. Close Microsoft Service Configuration Editor tool. This will ask you to Save Changes. Click Yes.
+
+The config file should updated with the settings we have made using the tool. At this point we have enabled tracing and message logging.
+
+Run the wcf service and the client. Make a request from the client. Look for the log files in the client or service folder depending on where you have enabled tracing and message logging.
+
+To open the log files use Service Trace Viewer utility that ships with .NET. To open Service Trace Viewer utility, there are 2 options
+1. Click on Start
+2. Click All Programs.
+3. Open Microsoft Visual Studio 2010 folder
+4. Open Windows SDK Tools folder and then select Service Trace Viewer tool
+
+Open Service Trace Viewer from visual studio command prompt
+1. Open visual studio command prompt
+2. Type SVCTRACEVIEWER and press enter
+
+Point the Service Trace Viewer utility to the log file and you should see the messages exchanged between the service and the client. 
