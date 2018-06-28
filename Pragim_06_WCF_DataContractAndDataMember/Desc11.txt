@@ -1,0 +1,28 @@
+http://csharp-video-tutorials.blogspot.com/2013/11/part-11-difference-between-datacontract_30.html
+
+Part 11 - Difference between datacontract and messagecontract in wcf
+Suggested Videos
+Part 8 - Different ways of associating known types in wcf
+Part 9 - How to enable tracing and message logging in wcf
+Part 10 - Message Contract in WCF
+
+
+
+DataContract gives very limited control over the SOAP messages. DataContract allows us to control the Name and Order of XML elements in the body section of the SOAP message. Beyond this we don't have much control over the SOAP messages.
+
+On the other hand, MessageContract gives full control over the SOAP messages by providing access to the SOAP header and body sections using MessageHeader and MessageBodyMember attributes. Use MessageContract if there is a reason to tweak the structure of the soap XML i.e if you want to include any additional information in the SOAP header.
+
+
+
+WCF Interview Questions related to MessageContract that were asked in an interview attended by one of our youtube subscribers
+1. Why do use MessageContract in WCF?
+MessageContract gives full control over the SOAP messages. For example, it allows us to include custom information in the SOAP header.
+
+2. What kind of custom information?
+User credentials to invoke the service.
+
+3. Why do you need to pass user credentials in the header? Can't you pass them as method parameters?
+We can, but user credentials are periphery to what the method has to do. So, it would make more sense to pass them out of band in the header, rather than as additional parameters.
+
+4. SOAP messages are in xml format, so anyone can read the credentials? How you do you protect sensitive data?
+Using MessageContract we can sign and encrypt messages. Use ProtectionLevel named parameter.
